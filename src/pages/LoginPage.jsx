@@ -32,7 +32,7 @@ export function LoginPage({ onLogin }) {
       overflow: 'hidden',
       fontFamily: 'sans-serif',
     }}>
-      {/* Background image — preloaded, covers full viewport, no scroll */}
+      {/* Background image */}
       <div style={{
         position: 'absolute',
         inset: 0,
@@ -40,12 +40,12 @@ export function LoginPage({ onLogin }) {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundColor: '#1a2a40',  /* fallback color while image loads */
+        backgroundColor: '#1a2a40',
         filter: 'brightness(0.55)',
         zIndex: 0,
       }} />
 
-      {/* Content on top of background */}
+      {/* Content */}
       <div style={{
         position: 'relative',
         zIndex: 1,
@@ -64,6 +64,8 @@ export function LoginPage({ onLogin }) {
           color: 'white',
           textShadow: '2px 2px 6px rgba(0,0,0,0.8)',
           maxWidth: '600px',
+          letterSpacing: 'normal',
+          lineHeight: 1.3,
         }}>
           STL Contract Price Computation and FM Calculator
         </h1>
@@ -82,8 +84,14 @@ export function LoginPage({ onLogin }) {
           flexDirection: 'column',
           gap: '1rem',
           boxSizing: 'border-box',
+          textAlign: 'left',
         }}>
-          <label style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>
+          <label style={{
+            fontSize: '0.85rem',
+            color: 'rgba(255,255,255,0.9)',
+            fontWeight: 500,
+            fontFamily: 'sans-serif',
+          }}>
             Enter Password:
           </label>
           <input
@@ -102,10 +110,17 @@ export function LoginPage({ onLogin }) {
               outline: 'none',
               boxSizing: 'border-box',
               width: '100%',
+              fontFamily: 'sans-serif',
             }}
           />
           {error && (
-            <p style={{ color: '#ff6b6b', fontWeight: 'bold', margin: 0, fontSize: '0.85rem' }}>{error}</p>
+            <p style={{
+              color: '#ff6b6b',
+              fontWeight: 'bold',
+              margin: 0,
+              fontSize: '0.85rem',
+              fontFamily: 'sans-serif',
+            }}>{error}</p>
           )}
           <button
             onClick={handleSubmit}
@@ -121,6 +136,7 @@ export function LoginPage({ onLogin }) {
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.7 : 1,
               width: '100%',
+              fontFamily: 'sans-serif',
               transition: 'opacity 0.2s',
             }}
           >
