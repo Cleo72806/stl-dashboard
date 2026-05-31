@@ -80,7 +80,7 @@ export function DashboardPage() {
           background: '#fff3cd', borderBottom: '1px solid #ffc107',
           padding: '8px 16px', fontSize: '0.85rem', color: '#856404',
         }}>
-          ⏳ Historical data is loading in the background. Recent data is already available.
+          ⏳ Loading data...
         </div>
       )}
 
