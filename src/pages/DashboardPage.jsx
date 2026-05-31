@@ -241,34 +241,43 @@ function FMTab({ rows, summary, dateRange, customer }) {
     try { return format(new Date(d), 'MM/dd') } catch { return d }
   }
 
-  // Custom tooltip to show the real xFm / yFm values, not the split segments
+  // Unified hover tooltip matching Plotly's hovermode="x unified" style
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null
     const row = chartRows.find(r => r.Date === label) || {}
+    const fmtPeso = (v) => `₱${Number(v || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`
     return (
       <div style={{
-        background: 'white', border: '1px solid #ccc', borderRadius: '6px',
-        padding: '8px 12px', fontSize: '0.78rem', lineHeight: 1.8,
+        background: 'rgba(255,255,255,0.96)',
+        border: '1px solid #d0d0d0',
+        borderRadius: '6px',
+        padding: '8px 14px',
+        fontSize: '0.8rem',
+        lineHeight: 2,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+        minWidth: '240px',
       }}>
-        <p style={{ margin: '0 0 4px', fontWeight: 600 }}>{tickFormatter(label)}</p>
-        <p style={{ margin: 0, color: 'darkblue' }}>
-          Price Without FM: ₱{Number(row.xFm || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+        <p style={{ margin: '0 0 2px', fontWeight: 700, fontSize: '0.82rem', borderBottom: '1px solid #eee', paddingBottom: '4px' }}>
+          {tickFormatter(label)}
         </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: 'darkblue', display: 'inline-block', flexShrink: 0 }} />
+          <span style={{ color: '#444' }}>Total Without FM: <strong style={{ color: 'darkblue' }}>{fmtPeso(row.xFm)}</strong></span>
+        </div>
         {row.hasFM && (
-          <p style={{ margin: 0, color: 'deepskyblue' }}>
-            Price With FM: ₱{Number(row.yFm || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: 10, height: 10, borderRadius: 2, background: 'deepskyblue', display: 'inline-block', flexShrink: 0 }} />
+            <span style={{ color: '#444' }}>Total With FM: <strong style={{ color: 'deepskyblue' }}>{fmtPeso(row.yFm)}</strong></span>
+          </div>
         )}
-        {payload.find(p => p.dataKey === 'yRate') && (
-          <p style={{ margin: 0, color: 'orange' }}>
-            Rate With FM: {Number(row.yRate || 0).toFixed(4)}
-          </p>
-        )}
-        {payload.find(p => p.dataKey === 'xRate') && (
-          <p style={{ margin: 0, color: '#4a9e4a' }}>
-            Rate Without FM: {Number(row.xRate || 0).toFixed(4)}
-          </p>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ width: 10, height: 2, background: 'orange', display: 'inline-block', flexShrink: 0 }} />
+          <span style={{ color: '#444' }}>Rate With FM: <strong style={{ color: 'orange' }}>{Number(row.yRate || 0).toFixed(4)}</strong></span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ width: 10, height: 2, background: 'lightgreen', display: 'inline-block', flexShrink: 0 }} />
+          <span style={{ color: '#444' }}>Rate Without FM: <strong style={{ color: '#4a9e4a' }}>{Number(row.xRate || 0).toFixed(4)}</strong></span>
+        </div>
       </div>
     )
   }
@@ -278,8 +287,8 @@ function FMTab({ rows, summary, dateRange, customer }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '1rem' }}>
         <MetricCard title="Revenue Impact"   value={fmt(summary.revenueImpact)} color="#dc3545" dateRange={dateRange} />
         <MetricCard title="Price Without FM" value={fmt(summary.xFm)}           color="#000080" dateRange={dateRange} />
-        <MetricCard title="Price With FM"    value={fmt(summary.yFm)}           color="#0d6efd" dateRange={dateRange} />
-        <MetricCard title="Rate Without FM"  value={fmt(summary.xRate, 4)} unit=" /kWh" color="#198754" dateRange={dateRange} />
+        <MetricCard title="Price With FM"    value={fmt(summary.yFm)}           color="#198754" dateRange={dateRange} />
+        <MetricCard title="Rate Without FM"  value={fmt(summary.xRate, 4)} unit=" /kWh" color="#0d6efd" dateRange={dateRange} />
         <MetricCard title="Rate With FM"     value={fmt(summary.yRate, 4)} unit=" /kWh" color="#fd7e14" dateRange={dateRange} />
         <div style={{ padding: '8px 12px', background: '#f8f9fa', borderLeft: '4px solid #0d6efd', borderRadius: '6px' }}>
           <p style={{ fontSize: '0.7rem', color: '#6c757d', margin: '0 0 2px' }}>Total FM Hours</p>
