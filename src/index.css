@@ -12,3 +12,15 @@ html, body, #root {
   color: #212529;
   color-scheme: light;
 }
+
+/* Force light mode on all form elements */
+input, select, button, textarea {
+  color-scheme: light;
+  color: #212529;
+  background-color: white;
+}
+
+/* Fix header visibility */
+h1, h2, h3, h4, h5, h6 {
+  color: #212529;
+}
