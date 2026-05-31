@@ -23,86 +23,110 @@ export function LoginPage({ onLogin }) {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundImage: 'url("/GMEC_GNPD_cured.png")',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundColor: 'rgba(0,0,0,0.45)',
-      backgroundBlendMode: 'overlay',
-      color: 'white',
+      overflow: 'hidden',
       fontFamily: 'sans-serif',
-      padding: '1rem',
-      textShadow: '2px 2px 4px rgba(0,0,0,0.7)',
     }}>
-      <h1 style={{
-        fontWeight: 700,
-        fontSize: '1.8rem',
-        marginBottom: '0.5rem',
-        textAlign: 'center',
-        color: 'white',
-      }}>
-        STL Contract Price Computation and FM Calculator
-      </h1>
-
-      <br />
-
+      {/* Background image — preloaded, covers full viewport, no scroll */}
       <div style={{
-        background: 'rgba(255,255,255,0.15)',
-        padding: '2rem',
-        borderRadius: '10px',
-        border: '1px solid rgba(255,255,255,0.3)',
-        backdropFilter: 'blur(5px)',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-        width: '100%',
-        maxWidth: '360px',
+        position: 'absolute',
+        inset: 0,
+        backgroundImage: 'url("/GMEC_GNPD_cured.png")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#1a2a40',  /* fallback color while image loads */
+        filter: 'brightness(0.55)',
+        zIndex: 0,
+      }} />
+
+      {/* Content on top of background */}
+      <div style={{
+        position: 'relative',
+        zIndex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: '1rem',
+        alignItems: 'center',
+        width: '100%',
+        padding: '1rem',
+        boxSizing: 'border-box',
       }}>
-        <label style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.85)' }}>
-          Enter Password:
-        </label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoFocus
-          onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
-          style={{
-            padding: '0.6rem 0.8rem',
-            borderRadius: '8px',
-            border: '1px solid rgba(255,255,255,0.3)',
-            background: 'rgba(255,255,255,0.08)',
-            color: 'white',
-            fontSize: '1rem',
-            outline: 'none',
-          }}
-        />
-        {error && (
-          <p style={{ color: '#ff6b6b', fontWeight: 'bold', margin: 0 }}>{error}</p>
-        )}
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          style={{
-            padding: '0.7rem',
-            borderRadius: '8px',
-            border: 'none',
-            background: '#0d6efd',
-            color: 'white',
-            fontWeight: 600,
-            fontSize: '1rem',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            opacity: loading ? 0.7 : 1,
-            width: '100%',
-          }}
-        >
-          {loading ? 'Logging in…' : 'Login & Get Started'}
-        </button>
+        <h1 style={{
+          fontWeight: 700,
+          fontSize: 'clamp(1.2rem, 3vw, 1.8rem)',
+          marginBottom: '1.5rem',
+          textAlign: 'center',
+          color: 'white',
+          textShadow: '2px 2px 6px rgba(0,0,0,0.8)',
+          maxWidth: '600px',
+        }}>
+          STL Contract Price Computation and FM Calculator
+        </h1>
+
+        <div style={{
+          background: 'rgba(255,255,255,0.15)',
+          padding: '2rem',
+          borderRadius: '10px',
+          border: '1px solid rgba(255,255,255,0.3)',
+          backdropFilter: 'blur(6px)',
+          WebkitBackdropFilter: 'blur(6px)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+          width: '100%',
+          maxWidth: '360px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          boxSizing: 'border-box',
+        }}>
+          <label style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>
+            Enter Password:
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoFocus
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
+            style={{
+              padding: '0.6rem 0.8rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.4)',
+              background: 'rgba(255,255,255,0.12)',
+              color: 'white',
+              fontSize: '1rem',
+              outline: 'none',
+              boxSizing: 'border-box',
+              width: '100%',
+            }}
+          />
+          {error && (
+            <p style={{ color: '#ff6b6b', fontWeight: 'bold', margin: 0, fontSize: '0.85rem' }}>{error}</p>
+          )}
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            style={{
+              padding: '0.7rem',
+              borderRadius: '8px',
+              border: 'none',
+              background: '#0d6efd',
+              color: 'white',
+              fontWeight: 600,
+              fontSize: '1rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.7 : 1,
+              width: '100%',
+              transition: 'opacity 0.2s',
+            }}
+          >
+            {loading ? 'Logging in…' : 'Login & Get Started'}
+          </button>
+        </div>
       </div>
     </div>
   )
