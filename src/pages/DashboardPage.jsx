@@ -45,6 +45,7 @@ export function DashboardPage() {
   const [adminKey,   setAdminKey]   = useState('')
   const [uploadMsg,  setUploadMsg]  = useState('')
   const [uploading,  setUploading]  = useState(false)
+  const [showUpload, setShowUpload] = useState(false)
 
   useEffect(() => { triggerBgLoad() }, []) // eslint-disable-line
 
@@ -70,11 +71,60 @@ export function DashboardPage() {
 
   return (
     <div style={{ fontFamily: 'sans-serif', minHeight: '100vh', background: '#f5f5f5' }}>
+
       {/* Header */}
-      <div style={{ textAlign: 'center', padding: '1rem', background: 'white', borderBottom: '1px solid #dee2e6' }}>
-        <h2 style={{ margin: 0, fontWeight: 700 }}>Customer's Contract Price and FM Calculator</h2>
+      <div style={{
+        textAlign: 'center', padding: '0.75rem 1rem',
+        background: 'white', borderBottom: '1px solid #dee2e6',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        flexWrap: 'wrap', gap: '0.5rem',
+      }}>
+        <h2 style={{ margin: 0, fontWeight: 700, fontSize: 'clamp(0.95rem, 2.5vw, 1.25rem)', flex: 1, textAlign: 'center', color: '#212529' }}>
+          Customer's Contract Price and FM Calculator
+        </h2>
+        <button
+          onClick={() => setShowUpload(!showUpload)}
+          style={{
+            padding: '6px 12px', borderRadius: '6px', border: '1px solid #ced4da',
+            background: '#f8f9fa', cursor: 'pointer', fontSize: '0.8rem', color: '#212529',
+          }}>
+          ☁ Upload
+        </button>
       </div>
 
+      {/* Upload panel (collapsible) */}
+      {showUpload && (
+        <div style={{
+          background: 'white', borderBottom: '1px solid #dee2e6',
+          padding: '1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '8px',
+        }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <input type="file" accept=".xlsx" onChange={(e) => setUploadFile(e.target.files[0])}
+              style={{ fontSize: '0.8rem', flex: 1, minWidth: '160px', color: '#212529' }} />
+            <input type="password" placeholder="Admin key" value={adminKey}
+              onChange={(e) => setAdminKey(e.target.value)}
+              style={{
+                padding: '6px 8px', borderRadius: '6px', border: '1px solid #ced4da',
+                width: '130px', fontSize: '0.85rem', color: '#212529', background: 'white',
+              }} />
+            <button onClick={handleUpload} disabled={uploading || !uploadFile || !adminKey}
+              style={{
+                padding: '6px 14px', borderRadius: '6px', border: 'none',
+                background: '#0d6efd', color: 'white', cursor: 'pointer', fontSize: '0.85rem',
+                opacity: (uploading || !uploadFile || !adminKey) ? 0.6 : 1,
+              }}>
+              {uploading ? 'Processing…' : 'Upload & Sync'}
+            </button>
+          </div>
+          {uploadMsg && (
+            <p style={{ fontSize: '0.8rem', margin: 0, color: uploadMsg.startsWith('✓') ? 'green' : 'red' }}>
+              {uploadMsg}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Background loading banner */}
       {bgLoading && (
         <div style={{
           background: '#fff3cd', borderBottom: '1px solid #ffc107',
@@ -86,78 +136,67 @@ export function DashboardPage() {
 
       {/* Controls row */}
       <div style={{
-        display: 'flex', gap: '1rem', flexWrap: 'wrap',
-        padding: '1rem 1.5rem', background: 'white',
-        borderBottom: '1px solid #dee2e6', alignItems: 'flex-end',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        gap: '0.75rem',
+        padding: '0.75rem 1rem',
+        background: 'white',
+        borderBottom: '1px solid #dee2e6',
       }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem', color: '#212529' }}>
           Provider
           <select value={provider} onChange={(e) => setProvider(e.target.value)}
-            style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid #ced4da' }}>
+            style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid #ced4da', color: '#212529', background: 'white' }}>
             <option value="GMEC">GMEC</option>
             <option value="GNPD">GNPD</option>
           </select>
         </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
+
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem', color: '#212529' }}>
           Customer
           <select value={customer} onChange={(e) => setCustomer(e.target.value)}
-            style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid #ced4da', minWidth: '160px' }}>
+            style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid #ced4da', color: '#212529', background: 'white' }}>
             {customers.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
+
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem', color: '#212529' }}>
           Date start
           <input type="date" value={dateStart} onChange={(e) => setDateStart(e.target.value)}
-            style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid #ced4da' }} />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
-          Date end
-          <input type="date" value={dateEnd} onChange={(e) => setDateEnd(e.target.value)}
-            style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid #ced4da' }} />
+            style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid #ced4da', color: '#212529', background: 'white' }} />
         </label>
 
-        {/* Upload card */}
-        <div style={{
-          marginLeft: 'auto', background: '#f8f9fa',
-          border: '1px solid #dee2e6', borderRadius: '8px',
-          padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '6px',
-        }}>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <input type="file" accept=".xlsx" onChange={(e) => setUploadFile(e.target.files[0])}
-              style={{ fontSize: '0.8rem' }} />
-            <input type="password" placeholder="Admin key" value={adminKey}
-              onChange={(e) => setAdminKey(e.target.value)}
-              style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #ced4da', width: '120px' }} />
-          </div>
-          <button onClick={handleUpload} disabled={uploading || !uploadFile || !adminKey}
-            style={{
-              padding: '5px 12px', borderRadius: '6px', border: 'none',
-              background: '#0d6efd', color: 'white', cursor: 'pointer', fontSize: '0.8rem',
-              opacity: (uploading || !uploadFile || !adminKey) ? 0.6 : 1,
-            }}>
-            {uploading ? 'Processing…' : '☁ Upload & Sync'}
-          </button>
-          {uploadMsg && <p style={{ fontSize: '0.75rem', margin: 0, color: uploadMsg.startsWith('✓') ? 'green' : 'red' }}>{uploadMsg}</p>}
-        </div>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem', color: '#212529' }}>
+          Date end
+          <input type="date" value={dateEnd} onChange={(e) => setDateEnd(e.target.value)}
+            style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid #ced4da', color: '#212529', background: 'white' }} />
+        </label>
       </div>
 
       {/* Tab bar */}
-      <div style={{ display: 'flex', background: 'white', borderBottom: '1px solid #dee2e6', padding: '0 1.5rem' }}>
+      <div style={{
+        display: 'flex', background: 'white',
+        borderBottom: '1px solid #dee2e6',
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
+      }}>
         {tabs.map((t, i) => (
           <button key={t} onClick={() => setTab(i)}
             style={{
-              padding: '10px 20px', border: 'none', background: 'none',
-              cursor: 'pointer', fontSize: '0.9rem',
+              padding: '10px 16px', border: 'none', background: 'none',
+              cursor: 'pointer', fontSize: 'clamp(0.75rem, 2vw, 0.9rem)',
               borderBottom: tab === i ? '2px solid #0d6efd' : '2px solid transparent',
               color: tab === i ? '#0d6efd' : '#6c757d',
               fontWeight: tab === i ? 600 : 400,
+              whiteSpace: 'nowrap', flexShrink: 0,
             }}>
             {t}
           </button>
         ))}
       </div>
 
-      <div style={{ padding: '1.5rem' }}>
+      {/* Main content */}
+      <div style={{ padding: '1rem' }}>
         {loading && <p style={{ color: '#6c757d' }}>Loading…</p>}
         {error   && <p style={{ color: '#dc3545', fontSize: '0.9rem' }}>{error}</p>}
         {!loading && rows.length > 0 && (
@@ -176,7 +215,7 @@ function ContractPriceTab({ rows, summary, dateRange, customer }) {
   const label = customer === 'All Customers' ? "All Customers'" : `${customer}'s`
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px', marginBottom: '1rem' }}>
         <MetricCard title="Contract Price" value={fmt(summary.aFm)}       color="#0d6efd" dateRange={dateRange} />
         <MetricCard title="Contract Rate"  value={fmt(summary.aRate, 4)} unit=" /kWh" color="#dc3545" dateRange={dateRange} />
       </div>
@@ -194,19 +233,19 @@ function CapacityEnergyTab({ rows, summary, dateRange, customer }) {
   const label = customer === 'All Customers' ? "All Customers'" : `${customer}'s`
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px', marginBottom: '1rem' }}>
         <MetricCard title="Capacity Price" value={fmt(summary.yFm)}       color="#0dcaf0" dateRange={dateRange} />
         <MetricCard title="Capacity Rate"  value={fmt(summary.yRate, 4)} unit=" /kWh" color="#fd7e14" dateRange={dateRange} />
         <MetricCard title="Energy Price"   value={fmt(summary.zFm)}       color="#198754" dateRange={dateRange} />
         <MetricCard title="Energy Rate"    value={fmt(summary.zRate, 4)} unit=" /kWh" color="#dc3545" dateRange={dateRange} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
         <DualAxisChart rows={rows} barKey="yFm" barName="Capacity Price" barColor="deepskyblue"
           lineKey="yRate" lineName="Capacity Rate" lineColor="orange" title="Capacity Price and Rate" compact />
         <DualAxisChart rows={rows} barKey="zFm" barName="Energy Price" barColor="green"
           lineKey="zRate" lineName="Energy Rate" lineColor="red" title="Energy Price and Rate" compact />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
         <SummaryBanner color="#00BFFF"
           text={`<strong>${label}</strong> capacity price: <strong style="color:#00BFFF">₱${fmt(summary.yFm)}</strong> at <strong style="color:#FFA500">${fmt(summary.yRate, 4)}</strong> PHP/kWh for ${dateRange}.`} />
         <SummaryBanner color="#006400"
@@ -219,20 +258,14 @@ function CapacityEnergyTab({ rows, summary, dateRange, customer }) {
 function FMTab({ rows, summary, dateRange, customer }) {
   const label = customer === 'All Customers' ? "All Customers'" : `${customer}'s`
 
-  // Stacked bar approach mirroring Plotly barmode="overlay":
-  //   - fmReduction  = xFm - yFm  (the darkblue "cap" visible above, only on FM days)
-  //   - yFm          = the deepskyblue portion (bottom, always full height on FM days)
-  // On non-FM days fmReduction = 0, so the whole bar is deepskyblue-coloured darkblue.
-  // We render yFm as deepskyblue FIRST (bottom), then fmReduction as darkblue on top.
-  // On non-FM days both segments are darkblue so the bar looks solid darkblue.
   const chartRows = rows.map(r => {
     const xFm = r.xFm || 0
     const yFm = r.yFm || 0
     const hasFM = Math.abs(xFm - yFm) > 0.01
     return {
       ...r,
-      fmBase:      yFm,           // deepskyblue segment (= With FM price)
-      fmReduction: hasFM ? (xFm - yFm) : 0,  // darkblue cap on top (= FM impact)
+      fmBase:      yFm,
+      fmReduction: hasFM ? (xFm - yFm) : 0,
       hasFM,
     }
   })
@@ -241,41 +274,35 @@ function FMTab({ rows, summary, dateRange, customer }) {
     try { return format(new Date(d), 'MM/dd') } catch { return d }
   }
 
-  // Unified hover tooltip matching Plotly's hovermode="x unified" style
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null
     const row = chartRows.find(r => r.Date === label) || {}
     const fmtPeso = (v) => `₱${Number(v || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`
     return (
       <div style={{
-        background: 'rgba(255,255,255,0.96)',
-        border: '1px solid #d0d0d0',
-        borderRadius: '6px',
-        padding: '8px 14px',
-        fontSize: '0.8rem',
-        lineHeight: 2,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-        minWidth: '240px',
+        background: 'rgba(255,255,255,0.96)', border: '1px solid #d0d0d0',
+        borderRadius: '6px', padding: '8px 14px', fontSize: '0.8rem',
+        lineHeight: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.12)', minWidth: '220px',
       }}>
         <p style={{ margin: '0 0 2px', fontWeight: 700, fontSize: '0.82rem', borderBottom: '1px solid #eee', paddingBottom: '4px' }}>
           {tickFormatter(label)}
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ width: 10, height: 10, borderRadius: 2, background: 'darkblue', display: 'inline-block', flexShrink: 0 }} />
-          <span style={{ color: '#444' }}>Total Without FM: <strong style={{ color: 'darkblue' }}>{fmtPeso(row.xFm)}</strong></span>
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: 'darkblue', display: 'inline-block' }} />
+          <span style={{ color: '#444' }}>Without FM: <strong style={{ color: 'darkblue' }}>{fmtPeso(row.xFm)}</strong></span>
         </div>
         {row.hasFM && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: 10, height: 10, borderRadius: 2, background: 'deepskyblue', display: 'inline-block', flexShrink: 0 }} />
-            <span style={{ color: '#444' }}>Total With FM: <strong style={{ color: 'deepskyblue' }}>{fmtPeso(row.yFm)}</strong></span>
+            <span style={{ width: 10, height: 10, borderRadius: 2, background: 'deepskyblue', display: 'inline-block' }} />
+            <span style={{ color: '#444' }}>With FM: <strong style={{ color: 'deepskyblue' }}>{fmtPeso(row.yFm)}</strong></span>
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ width: 10, height: 2, background: 'orange', display: 'inline-block', flexShrink: 0 }} />
+          <span style={{ width: 10, height: 2, background: 'orange', display: 'inline-block' }} />
           <span style={{ color: '#444' }}>Rate With FM: <strong style={{ color: 'orange' }}>{Number(row.yRate || 0).toFixed(4)}</strong></span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ width: 10, height: 2, background: 'lightgreen', display: 'inline-block', flexShrink: 0 }} />
+          <span style={{ width: 10, height: 2, background: 'lightgreen', display: 'inline-block' }} />
           <span style={{ color: '#444' }}>Rate Without FM: <strong style={{ color: '#4a9e4a' }}>{Number(row.xRate || 0).toFixed(4)}</strong></span>
         </div>
       </div>
@@ -284,7 +311,7 @@ function FMTab({ rows, summary, dateRange, customer }) {
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px', marginBottom: '1rem' }}>
         <MetricCard title="Revenue Impact"   value={fmt(summary.revenueImpact)} color="#dc3545" dateRange={dateRange} />
         <MetricCard title="Price Without FM" value={fmt(summary.xFm)}           color="#000080" dateRange={dateRange} />
         <MetricCard title="Price With FM"    value={fmt(summary.yFm)}           color="#198754" dateRange={dateRange} />
@@ -298,22 +325,18 @@ function FMTab({ rows, summary, dateRange, customer }) {
       </div>
 
       <div style={{ marginBottom: '1rem' }}>
-        <p style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', textAlign: 'center' }}>
+        <p style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', textAlign: 'center', color: '#212529' }}>
           Capacity Price and Rate — {customer}
         </p>
-        <ResponsiveContainer width="100%" height={380}>
-          <ComposedChart
-            data={chartRows}
-            margin={{ top: 10, right: 60, bottom: 60, left: 20 }}
-            barCategoryGap="8%"
-          >
+        <ResponsiveContainer width="100%" height={320}>
+          <ComposedChart data={chartRows} margin={{ top: 10, right: 50, bottom: 60, left: 10 }} barCategoryGap="8%">
             <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-            <XAxis dataKey="Date" tickFormatter={tickFormatter} angle={-45} textAnchor="end" tick={{ fontSize: 10 }} />
-            <YAxis yAxisId="left"  tickFormatter={(v) => `₱${(v/1e6).toFixed(1)}M`} tick={{ fontSize: 10 }} />
-            <YAxis yAxisId="right" orientation="right" domain={['auto', 'auto']} tick={{ fontSize: 10 }} />
+            <XAxis dataKey="Date" tickFormatter={tickFormatter} angle={-45} textAnchor="end" tick={{ fontSize: 9 }} />
+            <YAxis yAxisId="left"  tickFormatter={(v) => `₱${(v/1e6).toFixed(1)}M`} tick={{ fontSize: 9 }} width={55} />
+            <YAxis yAxisId="right" orientation="right" domain={['auto', 'auto']} tick={{ fontSize: 9 }} width={40} />
             <Tooltip content={<CustomTooltip />} />
             <Legend
-              wrapperStyle={{ fontSize: '0.75rem', paddingTop: '0.5rem' }}
+              wrapperStyle={{ fontSize: '0.7rem', paddingTop: '0.5rem' }}
               payload={[
                 { value: 'Price Without FM', type: 'square', color: 'darkblue' },
                 { value: 'Price With FM',    type: 'square', color: 'deepskyblue' },
@@ -321,18 +344,14 @@ function FMTab({ rows, summary, dateRange, customer }) {
                 { value: 'Rate Without FM',  type: 'line',   color: 'lightgreen' },
               ]}
             />
-
-            {/* Bottom segment: deepskyblue on FM days, darkblue on normal days */}
             <Bar yAxisId="left" dataKey="fmBase" name="Price With FM" stackId="fm" opacity={0.9} maxBarSize={40}>
               {chartRows.map((r, i) => (
                 <Cell key={i} fill={r.hasFM ? 'deepskyblue' : 'darkblue'} />
               ))}
             </Bar>
-            {/* Top cap: darkblue — only has height on FM days (fmReduction > 0) */}
             <Bar yAxisId="left" dataKey="fmReduction" name="Price Without FM" stackId="fm" fill="darkblue" opacity={0.85} maxBarSize={40} />
-
-            <Line yAxisId="right" type="monotone" dataKey="yRate" name="Rate With FM"    stroke="orange"     dot={{ r: 3 }} strokeWidth={2} />
-            <Line yAxisId="right" type="monotone" dataKey="xRate" name="Rate Without FM" stroke="lightgreen" dot={{ r: 3 }} strokeWidth={2} />
+            <Line yAxisId="right" type="monotone" dataKey="yRate" name="Rate With FM"    stroke="orange"     dot={{ r: 2 }} strokeWidth={2} />
+            <Line yAxisId="right" type="monotone" dataKey="xRate" name="Rate Without FM" stroke="lightgreen" dot={{ r: 2 }} strokeWidth={2} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -352,19 +371,19 @@ function DualAxisChart({ rows, barKey, barName, barColor, bar2Key, bar2Name, bar
 
   return (
     <div style={{ marginBottom: compact ? 0 : '1rem' }}>
-      {title && <p style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', textAlign: 'center' }}>{title}</p>}
-      <ResponsiveContainer width="100%" height={compact ? 240 : 380}>
-        <ComposedChart data={rows} margin={{ top: 10, right: 60, bottom: 60, left: 20 }}>
+      {title && <p style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', textAlign: 'center', color: '#212529' }}>{title}</p>}
+      <ResponsiveContainer width="100%" height={compact ? 220 : 340}>
+        <ComposedChart data={rows} margin={{ top: 10, right: 50, bottom: 60, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-          <XAxis dataKey="Date" tickFormatter={tickFormatter} angle={-45} textAnchor="end" tick={{ fontSize: 10 }} />
-          <YAxis yAxisId="left"  tickFormatter={(v) => `₱${(v/1e6).toFixed(1)}M`} tick={{ fontSize: 10 }} />
-          <YAxis yAxisId="right" orientation="right" domain={['auto', 'auto']} tick={{ fontSize: 10 }} />
+          <XAxis dataKey="Date" tickFormatter={tickFormatter} angle={-45} textAnchor="end" tick={{ fontSize: 9 }} />
+          <YAxis yAxisId="left"  tickFormatter={(v) => `₱${(v/1e6).toFixed(1)}M`} tick={{ fontSize: 9 }} width={55} />
+          <YAxis yAxisId="right" orientation="right" domain={['auto', 'auto']} tick={{ fontSize: 9 }} width={40} />
           <Tooltip formatter={(v, name) => name.includes('Rate') ? v?.toFixed(4) : `₱${Number(v).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`} />
-          <Legend wrapperStyle={{ fontSize: '0.75rem', paddingTop: '0.5rem' }} />
+          <Legend wrapperStyle={{ fontSize: '0.7rem', paddingTop: '0.5rem' }} />
           <Bar  yAxisId="left" dataKey={barKey}  name={barName}  fill={barColor}  opacity={0.85} />
-          {bar2Key  && <Bar  yAxisId="left"  dataKey={bar2Key}  name={bar2Name}  fill={bar2Color}  opacity={0.75} />}
-          <Line yAxisId="right" type="monotone" dataKey={lineKey}  name={lineName}  stroke={lineColor}  dot={{ r: 3 }} strokeWidth={2} />
-          {line2Key && <Line yAxisId="right" type="monotone" dataKey={line2Key} name={line2Name} stroke={line2Color} dot={{ r: 3 }} strokeWidth={2} />}
+          {bar2Key  && <Bar yAxisId="left" dataKey={bar2Key} name={bar2Name} fill={bar2Color} opacity={0.75} />}
+          <Line yAxisId="right" type="monotone" dataKey={lineKey}  name={lineName}  stroke={lineColor}  dot={{ r: 2 }} strokeWidth={2} />
+          {line2Key && <Line yAxisId="right" type="monotone" dataKey={line2Key} name={line2Name} stroke={line2Color} dot={{ r: 2 }} strokeWidth={2} />}
         </ComposedChart>
       </ResponsiveContainer>
     </div>
