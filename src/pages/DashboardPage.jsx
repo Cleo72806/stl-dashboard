@@ -80,7 +80,7 @@ export function DashboardPage() {
           background: '#fff3cd', borderBottom: '1px solid #ffc107',
           padding: '8px 16px', fontSize: '0.85rem', color: '#856404',
         }}>
-          ⏳ Loading data...
+          ⏳ Historical data is loading in the background. Recent data is already available.
         </div>
       )}
 
@@ -90,14 +90,15 @@ export function DashboardPage() {
         padding: '1rem 1.5rem', background: 'white',
         borderBottom: '1px solid #dee2e6', alignItems: 'flex-end',
       }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
-          Provider
-          <select value={provider} onChange={(e) => setProvider(e.target.value)}
-            style={{ padding: '6px 8px', borderRadius: '6px', border: '1px solid #ced4da' }}>
-            <option value="GMEC">GMEC</option>
-            <option value="GNPD">GNPD</option>
-          </select>
-        </label>
+        {/* Provider is fixed per deployment via VITE_PROVIDER env var */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
+          <span style={{ color: '#6c757d' }}>Provider</span>
+          <span style={{
+            padding: '6px 12px', borderRadius: '6px',
+            border: '1px solid #ced4da', background: '#f8f9fa',
+            fontWeight: 600, color: '#0d6efd', fontSize: '0.9rem',
+          }}>{provider}</span>
+        </div>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
           Customer
           <select value={customer} onChange={(e) => setCustomer(e.target.value)}

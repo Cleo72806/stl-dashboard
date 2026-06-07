@@ -6,8 +6,11 @@ const today = new Date()
 const defaultStart = format(subDays(today, 30), 'yyyy-MM-dd')
 const defaultEnd   = format(today, 'yyyy-MM-dd')
 
+// Read provider from env — set VITE_PROVIDER=GMEC or VITE_PROVIDER=GNPD in Vercel
+const ENV_PROVIDER = import.meta.env.VITE_PROVIDER || 'GMEC'
+
 export function useDashboard() {
-  const [provider,  setProvider]  = useState('GMEC')
+  const [provider,  setProvider]  = useState(ENV_PROVIDER)
   const [customer,  setCustomer]  = useState('')
   const [customers, setCustomers] = useState([])
   const [dateStart, setDateStart] = useState(defaultStart)
